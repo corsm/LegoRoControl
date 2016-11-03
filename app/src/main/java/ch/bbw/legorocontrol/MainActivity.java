@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         Log.v("accessIP", accessIP.getText().toString());
 
         try { //TODO: ersetzen mit Connection Klasse
-            URL url = new URL("http://"+accessIP);
+            /*URL url = new URL("http://"+accessIP);
             HttpURLConnection urlRobot = (HttpURLConnection) url.openConnection();
             urlRobot.setConnectTimeout(10 * 1000);          // = 10 Sekunden
             urlRobot.connect();
@@ -84,9 +84,25 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         {
+        }*/
+
+            Connection connection = new Connection(accessIP.getText().toString());
+            connection.connect();
+            if (connection.testConnection()) {
+                System.out.println("MainActivity connection test OK");
+                Intent intent = new Intent(this, LegoControl.class);
+                intent.putExtra(CONNECTION_STRING, accessIP.getText());
+                startActivity(intent);
+            }
+            else{
+                //TODO: fehler Meldung auf UI
+                System.out.println("Fehler in MainActivity testConnection");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
+
     }
-
-
 }

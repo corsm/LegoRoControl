@@ -6,6 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by admin on 02.11.2016.
  */
@@ -19,8 +22,17 @@ public class LegoControl extends AppCompatActivity{
         Intent intent = getIntent();
         String legoIP = intent.getStringExtra(MainActivity.CONNECTION_STRING);
 
+        Connection connection = new Connection(legoIP);
 
-        ViewGroup layout = (ViewGroup) findViewById(R.id.activity_display_message);
-        layout.addView(textView);
+        LegoRobot robot = new LegoRobot(connection);
+
+        Map<String, Float> directions = new HashMap<>();
+
+        float speed = 100;
+
+        directions.put("m", speed);
+
+        robot.drive(directions);
+
     }
 }
