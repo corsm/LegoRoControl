@@ -1,8 +1,10 @@
 package ch.bbw.legorocontrol;
 
 import android.content.Intent;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -14,6 +16,10 @@ import java.util.Map;
  */
 public class LegoControl extends AppCompatActivity{
 
+    private LegoRobot robot;
+    private Connection connection;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,9 +28,16 @@ public class LegoControl extends AppCompatActivity{
         Intent intent = getIntent();
         String legoIP = intent.getStringExtra(MainActivity.CONNECTION_STRING);
 
-        Connection connection = new Connection(legoIP);
+        connection = new Connection(legoIP);
 
-        LegoRobot robot = new LegoRobot(connection);
+        robot = new LegoRobot(connection);
+
+
+    }
+
+    public void steuerungStarten(View view){
+
+        SensorManager sensorManager = new S;
 
         Map<String, Float> directions = new HashMap<>();
 
@@ -33,6 +46,5 @@ public class LegoControl extends AppCompatActivity{
         directions.put("m", speed);
 
         robot.drive(directions);
-
     }
 }

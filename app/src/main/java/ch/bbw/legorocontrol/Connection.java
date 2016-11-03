@@ -9,7 +9,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -41,17 +44,36 @@ public class Connection {
 
     }
 
-    public boolean testConnection() throws IOException {
+    public boolean testConnection() throws Exception{
 
-        con.setConnectTimeout(10 * 1000);          // = 10 Sekunden
-        con.connect();
-        if (con.getReadTimeout() == 200) {        // 200 = "OK" http Verbindung ist OK
-            System.out.println("testConnection ist OK");
+        //con.setConnectTimeout(10 * 1000);          // = 10 Sekunden
+
+            //con.connect();
+            if (con.getResponseCode() == 200) {        // 200 = "OK" http Verbindung ist OK oder con.getResponseCode();
+                System.out.println("testConnection ist OK");
+                return true;
+            } else {
+                return false;
+            }
+    }
+
+
+
+
+   /* public boolean testConnection() {
+
+
+        try {
+            Socket socket = new Socket();
+            SocketAddress socketAddress = new InetSocketAddress(url.toString(), 139);
+            socket.connect(socketAddress, 100);
+            socket.close();
             return true;
-        } else {
+        } catch (IOException e) {
             return false;
         }
-    }
+    }*/
+
 
     /*public boolean checkNewHost(String hostIP){ //mit einer neuen IP Adresse
         try {
