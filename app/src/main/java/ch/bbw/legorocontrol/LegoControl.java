@@ -61,7 +61,7 @@ public class LegoControl extends AppCompatActivity implements SensorEventListene
         connection = new Connection(legoIP);
 
         connection.connect();
-        connection.sendRequest("m=100");
+        //connection.sendRequest("m=100");
     }
 
 
