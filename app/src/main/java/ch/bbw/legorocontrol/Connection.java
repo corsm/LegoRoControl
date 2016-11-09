@@ -63,7 +63,7 @@ public class Connection {
 
     public boolean isWall(){
 
-        String wertSonic = "1"; //default = fahren
+        String wertSonic = "6"; //default = fahren
 
         try {
             con = (HttpURLConnection) url.openConnection();

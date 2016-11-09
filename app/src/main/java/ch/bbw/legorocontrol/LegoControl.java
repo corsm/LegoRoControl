@@ -119,23 +119,23 @@ public class LegoControl extends AppCompatActivity implements SensorEventListene
                 String driveRight;
 
                 //nur fahren wenn nach vorne gekippt
-                if (event.values[1]>0){
-                    int tryForward = (int) ((event.values[1]*100));
+                if (event.values[1]>15){ //nur bei starker kippung
+                    int tryForward = (int) ((event.values[1]*1)); //war *100, jetzt kleinere werte
                     driveForward = "m="+tryForward;
                     connection.connect();
                     connection.sendRequest(driveForward);
                 }
 
                 //wert von der X achse in links oder rechts kippung umrechnen
-                if (event.values[2]<0){
-                    int tryRight = (int) ((event.values[2]*100));
-                    driveRight = "r="+tryRight;
+                if (event.values[2]<-15){//nur bei starker kippung
+                    int tryRight = (int) ((Math.abs(event.values[2])*1));//war *100, jetzt kleinere werte
+                    driveRight = "l="+tryRight;
                     connection.connect();
                     connection.sendRequest(driveRight);
                 }
-                else {
-                    int tryLeft = (int) ((event.values[2]*100));
-                    driveLeft = "l="+tryLeft;
+                else if(event.values[2]>15){//nur bei starker kippung
+                    int tryLeft = (int) ((event.values[2]*1));//war *100, jetzt kleinere werte
+                    driveLeft = "r="+tryLeft;
                     connection.connect();
                     connection.sendRequest(driveLeft);
                 }
