@@ -21,7 +21,7 @@ import java.util.EventListener;
 public class MainActivity extends AppCompatActivity {
 
     EditText accessIP;
-    public final static String CONNECTION_STRING = "ch.bbw.legorocontrol.CONNECTION";
+    public final static String CONNECTION_STRING = "ch.bbw.legorocontrol.CONNECTION_STRING";
 
 
     @Override
@@ -71,44 +71,25 @@ public class MainActivity extends AppCompatActivity {
         Log.v("accessIP", accessIP.getText().toString());
 
         try { //TODO: ersetzen mit Connection Klasse
-            /*URL url = new URL("http://"+accessIP);
-            HttpURLConnection urlRobot = (HttpURLConnection) url.openConnection();
-            urlRobot.setConnectTimeout(10 * 1000);          // = 10 Sekunden
-            urlRobot.connect();
-            if (urlRobot.getResponseCode() == 200) {        // 200 = "OK" http Verbindung ist OK
-                System.out.println("LegoRoboter verbunden");
-                Intent intent = new Intent(this, LegoControl.class);
-                intent.putExtra(CONNECTION_STRING,accessIP.getText());
-                startActivity(intent);
-            } else {
-                //TODO: fehler Meldung in GUI
-            }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        {
-        }*/
-
-            Connection connection = new Connection(accessIP.getText().toString());
-            connection.connect();
-            if (connection.testConnection()) {
-                System.out.println("MainActivity connection test OK");
-                Intent intent = new Intent(this, LegoControl.class);
-                intent.putExtra(CONNECTION_STRING, accessIP.getText());
-                startActivity(intent);
-            }
-            else{
-                //TODO: fehler Meldung auf UI
-                System.out.println("Fehler in MainActivity testConnection");
+            if (!accessIP.getText().equals("")||!accessIP.equals(null)) {
+                Connection connection = new Connection(accessIP.getText().toString());
+                connection.connect();
+                if (connection.testConnection()) {
+                    System.out.println("MainActivity connection test OK");
+                    Intent intent = new Intent(this, LegoControl.class);
+                    intent.putExtra(CONNECTION_STRING, accessIP.getText().toString());
+                    startActivity(intent);
+                } else {
+                    //TODO: fehler Meldung auf UI
+                    System.out.println("Fehler in MainActivity testConnection");
+                }
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            }catch(IOException e){
+                e.printStackTrace();
+            }catch(Exception e){
+                e.printStackTrace();
+            }
 
 
     }

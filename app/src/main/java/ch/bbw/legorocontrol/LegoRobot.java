@@ -7,9 +7,9 @@ import java.util.Map;
  */
 public class LegoRobot {
 
-    Connection connection;
+    private Connection connection;
 
-    public LegoRobot(Connection connection){
+    public LegoRobot(Connection connection) {
         this.connection = connection;
     }
 
@@ -17,6 +17,7 @@ public class LegoRobot {
     public void drive(Map<String, Float> direction){
         for (Map.Entry<String, Float> command: direction.entrySet()) {
             try {
+                //connection.connect();
                 connection.sendRequest(command.getKey()+"="+command.getValue());
             } catch (Exception e) {
                 e.printStackTrace();

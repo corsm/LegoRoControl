@@ -1,6 +1,9 @@
 package ch.bbw.legorocontrol;
 
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,16 +11,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by admin on 02.11.2016.
  */
-public class LegoControl extends AppCompatActivity{
+public class LegoControl extends AppCompatActivity implements SensorEventListener{
 
     private LegoRobot robot;
-    private Connection connection;
+    private static Connection connection;
+    private SensorManager sManager;
+    private TextView tv;
+    private Map<String, Float> directions;
+    private String legoIP;
 
 
     @Override
@@ -25,26 +33,119 @@ public class LegoControl extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lego_control);
 
+        tv = (TextView) findViewById(R.id.textView);
+
+        //hook
+        sManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        sManager.registerListener(this, sManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), 5);
+        //SensorManager.SENSOR_DELAY_FASTEST); fastest war zu schnell, führte zu request overflow bei der connection
+
         Intent intent = getIntent();
-        String legoIP = intent.getStringExtra(MainActivity.CONNECTION_STRING);
+        legoIP = intent.getStringExtra(MainActivity.CONNECTION_STRING);
+
+        //connection = new Connection(legoIP);
+
+        //TODO: neue Lösung für POST request um Roboter Klasse wieder verwenden zu können
+        //robot = new LegoRobot(connection);
+
+
+    }
+
+    public void steuerungStarten(View view) throws Exception{
+
+        directions =  new HashMap<>();
+        float speed = 100;
+        directions.put("m", speed);
+        //robot.drive(directions);
 
         connection = new Connection(legoIP);
 
-        robot = new LegoRobot(connection);
-
-
+        connection.connect();
+        connection.sendRequest("m=100");
     }
 
-    public void steuerungStarten(View view){
 
-        SensorManager sensorManager = new S;
 
-        Map<String, Float> directions = new HashMap<>();
 
-        float speed = 100;
 
-        directions.put("m", speed);
+        //when this Activity starts
+        @Override
+        protected void onResume()
+        {
+            super.onResume();
+                //register listener
+            sManager.registerListener(this, sManager.getDefaultSensor(Sensor.TYPE_ORIENTATION),SensorManager.SENSOR_DELAY_FASTEST);
+        }
 
-        robot.drive(directions);
+
+        @Override
+        protected void onStop()
+        {
+            //unregister listener
+            sManager.unregisterListener(this);
+            super.onStop();
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor arg0, int arg1)
+        {
+            //nichts machen
+        }
+
+        @Override
+        public void onSensorChanged(SensorEvent event)
+        {
+            //textoutput zur info
+            tv.setText("Orientation X (Roll) :"+ Float.toString(event.values[2]) +"\n"+
+                    "Orientation Y (Pitch) :"+ Float.toString(event.values[1]) +"\n"+
+                    "Orientation Z (Yaw) :"+ Float.toString(event.values[0]));
+
+
+            //nur fahren wenn keine Wand vor dem Roboter ist
+            //isWall() returnt true bei Wand vorne !
+            //if(connection.isWall()){
+            //TODO: isWall() debuggen
+            //}
+          //  else {
+            if (connection!=null){
+            try {
+
+                //directions.put("m", event.values[1]);
+                //robot.drive(directions);
+
+
+                String driveForward;
+                String driveLeft;
+                String driveRight;
+
+                //nur fahren wenn nach vorne gekippt
+                if (event.values[1]>0){
+                    int tryForward = (int) ((event.values[1]*100));
+                    driveForward = "m="+tryForward;
+                    connection.connect();
+                    connection.sendRequest(driveForward);
+                }
+
+                //wert von der X achse in links oder rechts kippung umrechnen
+                if (event.values[2]<0){
+                    int tryRight = (int) ((event.values[2]*100));
+                    driveRight = "r="+tryRight;
+                    connection.connect();
+                    connection.sendRequest(driveRight);
+                }
+                else {
+                    int tryLeft = (int) ((event.values[2]*100));
+                    driveLeft = "l="+tryLeft;
+                    connection.connect();
+                    connection.sendRequest(driveLeft);
+                }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }}
+            //connection.sendRequest("l=");
+//        }
     }
 }
+
